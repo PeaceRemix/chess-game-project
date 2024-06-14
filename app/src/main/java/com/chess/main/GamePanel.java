@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
-import com.chess.piece.Piece; //待研究
+import com.chess.piece.Piece; 
 import com.chess.piece.Pawn;
 import com.chess.piece.Rook;
 import com.chess.piece.Queen;
