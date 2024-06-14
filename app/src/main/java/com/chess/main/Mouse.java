@@ -1,4 +1,5 @@
 package com.chess.main;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -9,7 +10,6 @@ public class Mouse extends MouseAdapter {
     public boolean leftButtonPressed;
     public boolean rightButtonPressed;
 
-
     public void mousePressed(MouseEvent e) {
         pressed = true;
         if (e.getButton() == MouseEvent.BUTTON1) {
@@ -19,7 +19,6 @@ public class Mouse extends MouseAdapter {
         }
     }
 
- 
     public void mouseReleased(MouseEvent e) {
         pressed = false;
         if (e.getButton() == MouseEvent.BUTTON1) {
@@ -29,12 +28,10 @@ public class Mouse extends MouseAdapter {
         }
     }
 
- 
     public void mouseDragged(MouseEvent e) {
         coordinate_x = e.getX();
         coordinate_y = e.getY();
     }
-
 
     public void mouseMoved(MouseEvent e) {
         coordinate_x = e.getX();
