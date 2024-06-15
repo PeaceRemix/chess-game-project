@@ -55,8 +55,8 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean promotion = false;
     private boolean FusionPawnAndCar = false;
     private boolean CanChangeWithQueen = false;
-    private boolean rightClick = false;
-    private boolean leftClick = false;
+    public static boolean rightClick = false;
+    public static boolean leftClick = false;
 
     public GamePanel() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));// 视窗大小
@@ -241,6 +241,13 @@ public class GamePanel extends JPanel implements Runnable {
                             simPieces.remove(activePiece);
                             simPieces.add(new Rook(white, UnfuseColumn, UnfuseRow));
                             Piece pawn = new Pawn(white, UnfuseColumn, UnfuseRow + 1);
+                            pawn.moved = true;
+                            simPieces.add(pawn);
+                        }
+                        if (activePiece.color.equals("black")) {
+                            simPieces.remove(activePiece);
+                            simPieces.add(new Rook(black, UnfuseColumn, UnfuseRow));
+                            Piece pawn = new Pawn(black, UnfuseColumn, UnfuseRow - 1);
                             pawn.moved = true;
                             simPieces.add(pawn);
                         }

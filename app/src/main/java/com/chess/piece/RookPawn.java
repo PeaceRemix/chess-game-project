@@ -26,7 +26,7 @@ public class RookPawn extends Piece {
             }
         }
 
-        else if (isASameSquare(targetColumn, targetRow) == true) {
+        else if (isASameSquare(targetColumn, targetRow) == true && GamePanel.rightClick == true) {
             if (targetRow == this.previous_Row && targetColumn == this.previous_Column) {
                 if (this.color.equals("white") && isIntheBoard(targetColumn, targetRow + 1)) {
                     if (isAnEmptySquare(this.previous_Column, this.previous_Row + 1)) {
@@ -42,6 +42,7 @@ public class RookPawn extends Piece {
 
         }
         return false;
+
     }
 
 }
