@@ -61,15 +61,15 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));// 视窗大小
         setBackground(Color.black);// 背景颜色
-        addMouseMotionListener(mouse);// 干嘛
-        addMouseListener(mouse);// 干嘛
+        addMouseMotionListener(mouse);// 同理
+        addMouseListener(mouse);// 偵測滑鼠事件的 listener
 
         setPieces();
         copyPieces(pieces, simPieces);
 
     }
 
-    public void launchGame() {// 没搞懂
+    public void launchGame() {// gameThread 是顯示和運算在不同 Thread 上，像這裡畫面FPS 60，但程式執行不可能只有 60 times PerScond
         gameThread = new Thread(this);
         gameThread.start();// 呼唤 run？？？
     }
