@@ -14,8 +14,8 @@ public class Login extends JPanel {
 
     final int FPS = 60;
     Mouse mouse = new Mouse();
-    JButton loginButton = new JButton("Strat Game");
-    JButton exitButton = new JButton("Quite Game");
+    JButton loginButton = new JButton("Start Game");
+    JButton exitButton = new JButton("Quit Game");
     JPanel titlePanel = new JPanel();
     static JLabel title = new JLabel("Kirby Chess Game");
 
