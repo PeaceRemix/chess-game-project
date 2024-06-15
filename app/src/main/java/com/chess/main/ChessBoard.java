@@ -19,10 +19,10 @@ public class ChessBoard {
             for (int column = 0; column < Max_Column; column++) {
 
                 if (isBrightGrid) {
-                    g2.setColor(new Color(210, 165, 125));
+                    g2.setColor(new Color(255, 225, 255));
                     isBrightGrid = false;
                 } else {
-                    g2.setColor(new Color(175, 115, 70));
+                    g2.setColor(new Color(139, 123, 139));
                     isBrightGrid = true;
                 }
 

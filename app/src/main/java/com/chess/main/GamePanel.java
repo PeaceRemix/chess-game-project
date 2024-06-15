@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
-import com.chess.piece.Piece; 
+import com.chess.piece.Piece;
 import com.chess.piece.Pawn;
 import com.chess.piece.Rook;
 import com.chess.piece.Queen;
@@ -451,7 +451,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Status Messages
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setFont(new Font("Comic Sans", Font.PLAIN, 40));
-        
+
         if (currentColor == white) {
             g2.setColor(Color.PINK);
             g2.drawString("Pink's turn", 680, 550);
@@ -462,15 +462,16 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (gameOver) {
             String Winner = "";
+            g2.setFont(new Font("Comic Sans", Font.PLAIN, 90));
             if (gameStatic == 0) {
-                Winner = "Pink Win!";
-                g2.setColor(Color.PINK);
-            } else {
                 Winner = "Blue Win!";
                 g2.setColor(Color.BLUE);
+                g2.drawString(Winner, 600, 400);
+            } else {
+                Winner = "Pink Win!";
+                g2.setColor(Color.PINK);
+                g2.drawString(Winner, 600, 500);
             }
-            g2.setFont(new Font("Comic Sans", Font.PLAIN, 90));
-            g2.drawString(Winner, 680, 400);
         }
 
     }

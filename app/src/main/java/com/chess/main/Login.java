@@ -4,6 +4,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Color;
 import java.awt.event.*;
 
@@ -16,16 +17,25 @@ public class Login extends JPanel {
     JButton loginButton = new JButton("Strat Game");
     JButton exitButton = new JButton("Quite Game");
     JPanel titlePanel = new JPanel();
-    static JLabel title = new JLabel("kirby Chess Game");
+    static JLabel title = new JLabel("Kirby Chess Game");
 
     public Login() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setBackground(Color.white);
+        setBackground(Color.black);
         addMouseListener(mouse);
+        setLayout(null);
+
+        title.setForeground(Color.white);
+        title.setFont(new Font("Comic Sans", Font.BOLD, 36));
+        titlePanel.setBounds(350, 50,400, 100);
+        titlePanel.setBackground(Color.black);
+        titlePanel.add(title);
+
+        loginButton.setBounds(400, 200, 300, 50);
+        exitButton.setBounds(400, 300, 300, 50);
 
         add(loginButton);
         add(exitButton);
-        titlePanel.add(title);
         add(titlePanel);
 
         loginButton.addActionListener(new ActionListener() {
