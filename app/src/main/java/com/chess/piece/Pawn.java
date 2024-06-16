@@ -73,4 +73,10 @@ public class Pawn extends Piece {
 
     }
 
+    public static boolean canPromote(PieceImfo pi) {
+        for (Piece piece : pi.Pieces)
+            if (piece.type == Type.Pawn && piece.row == ((piece.color=="white")?0:7))
+                return true;
+        return false;
+    }
 }

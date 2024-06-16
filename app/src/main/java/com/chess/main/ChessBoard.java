@@ -1,7 +1,6 @@
 package com.chess.main;
 
 import java.awt.Color;
-import java.awt.Graphics;// Java Graphics can only draw simple shapes
 import java.awt.Graphics2D;//Java Graphics2D draws more complicated features
 
 public class ChessBoard {

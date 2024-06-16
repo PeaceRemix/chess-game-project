@@ -3,8 +3,6 @@ package com.chess.piece;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import java.util.ArrayList;
-import java.awt.Graphics2D;
 import com.chess.main.ChessBoard;
 import com.chess.main.GamePanel;
 import com.chess.main.Type;
@@ -43,7 +41,6 @@ public class Piece {// super class for all pieces
 
     public BufferedImage getImage(String imagePath) {
 
-        BufferedImage PiecesImage = null;
 
         try {
             image = ImageIO.read(getClass().getResourceAsStream(imagePath + ".png"));// getclass why 需要

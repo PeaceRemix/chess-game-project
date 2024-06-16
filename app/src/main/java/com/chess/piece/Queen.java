@@ -16,7 +16,7 @@ public class Queen extends Piece{
     public boolean canMove(int targetCol, int targetRow){
         if(isIntheBoard(targetCol,targetRow) && !isASameSquare(targetCol,targetRow)){
             if(getHittingPiece(targetCol, targetRow)!=null)
-                if(getHittingPiece(targetCol, targetRow).type == Type.Queen)
+                if(getHittingPiece(targetCol, targetRow).type == Type.Queen && isAnAllySquare(targetCol, targetRow))
                     return false;
             if(isAnAllySquare(targetCol, targetRow))
                 return true;
@@ -29,7 +29,7 @@ public class Queen extends Piece{
     public static ArrayList<Piece> ChangeWithQueen(PieceImfo pi){
         ArrayList<Piece> ChangePiece= new ArrayList<>();
         for(Piece piece : pi.simPiece)
-            if(pi.actCol == piece.column && pi.actRow == piece.row && (piece.type != Type.Queen))
+            if(pi.actPiece.column == piece.column && pi.actPiece.row == piece.row && (piece.type != Type.Queen))
                 ChangePiece.add(piece);
         if(ChangePiece.size()<=0)
             return pi.simPiece;              

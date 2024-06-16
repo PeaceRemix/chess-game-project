@@ -1,5 +1,6 @@
 package com.chess.main;
 
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -7,49 +8,31 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.util.ArrayList;
-import com.chess.piece.Piece;
-import com.chess.piece.Pawn;
-import com.chess.piece.Rook;
-import com.chess.piece.Queen;
-import com.chess.piece.Bishop;
-import com.chess.piece.King;
-import com.chess.piece.Knight;
-import com.chess.piece.RookPawn;
-import com.chess.piece.PieceImfo;
 import java.awt.AlphaComposite;
-
-//version2 修理
+import com.chess.piece.*;
 
 public class GamePanel extends JPanel implements Runnable {
 
+    // about show and run
     public static final int WIDTH = 1100;
     public static final int HEIGHT = 800;
+    final int FPS = 60;
     public int gameStatic = -1;
     public boolean gameOver = false;
-    final int FPS = 60;
-    Thread gameThread;// 没搞懂
+    Thread gameThread;
     ChessBoard chessboard = new ChessBoard();
     Mouse mouse = new Mouse();
 
-    // PIECES
-    public static ArrayList<Piece> pieces = new ArrayList<>();// 为啥需要两行
-    Piece activePiece;
+    // pieces
     ArrayList<Piece> promoPieces = new ArrayList<>();
     public static PieceImfo pieceImfo = new PieceImfo();
 
-    // 颜色
-    /*
-     * public static final int white = 0;
-     * public static final int black = 1;
-     * int currentColor = white;
-     */
-
+    // color
     public static final String white = "white";
     public static final String black = "black";
     String currentColor = white;
 
-    // 移動
+    // about moving
     private boolean canMove = false;
     private boolean validSquare = false;
     private boolean promotion = false;
@@ -59,53 +42,22 @@ public class GamePanel extends JPanel implements Runnable {
     public static boolean leftClick = false;
 
     public GamePanel() {
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));// 视窗大小
-        setBackground(Color.black);// 背景颜色
-        addMouseMotionListener(mouse);// 同理
-        addMouseListener(mouse);// 偵測滑鼠事件的 listener
-
+        setPreferredSize(new Dimension(WIDTH, HEIGHT)); // set the window size
+        setBackground(Color.black); // background color 
+        addMouseMotionListener(mouse);
+        addMouseListener(mouse);// detect mouse click
         setPieces();
-        copyPieces(pieces, pieceImfo.simPiece);
+        setPromotePiece();
+        copyPieces(pieceImfo.Pieces, pieceImfo.simPiece);
     }
 
     public void launchGame() {// gameThread 是顯示和運算在不同 Thread 上，像這裡畫面FPS 60，但程式執行不可能只有 60 times PerScond
         gameThread = new Thread(this);
-        gameThread.start();// 呼唤 run？？？
+        gameThread.start(); // call run?
     }
 
-    public void setPieces() {
-
-        pieces.add(new Pawn(white, 0, 6));
-        pieces.add(new Pawn(white, 1, 6));
-        pieces.add(new Pawn(white, 2, 6));
-        pieces.add(new Pawn(white, 3, 6));
-        pieces.add(new Pawn(white, 4, 6));
-        pieces.add(new Rook(white, 0, 7));
-        pieces.add(new Queen(white, 1, 7));
-        pieces.add(new Bishop(white, 2, 7));
-        pieces.add(new King(white, 3, 7));
-        pieces.add(new Knight(white, 4, 7));
-        pieces.add(new Pawn(black, 0, 1));
-        pieces.add(new Pawn(black, 1, 1));
-        pieces.add(new Pawn(black, 2, 1));
-        pieces.add(new Pawn(black, 3, 1));
-        pieces.add(new Pawn(black, 4, 1));
-        pieces.add(new Rook(black, 4, 0));
-        pieces.add(new Queen(black, 3, 0));
-        pieces.add(new Bishop(black, 2, 0));
-        pieces.add(new King(black, 1, 0));
-        pieces.add(new Knight(black, 0, 0));
-
-    }
-
-    private void copyPieces(ArrayList<Piece> Beginning, ArrayList<Piece> Destination) {
-        Destination.clear();
-        for (int i = 0; i < Beginning.size(); i++)
-            Destination.add(Beginning.get(i));
-    }
-
-    public void run() {// override runnan
-        double drawInterval = 1000000000 / FPS;// 每一帧的时间间隔
+    public void run() { // override runnan
+        double drawInterval = 1000000000 / FPS;// frame
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
@@ -114,183 +66,107 @@ public class GamePanel extends JPanel implements Runnable {
             currentTime = System.nanoTime();
             delta = delta + (currentTime - lastTime) / drawInterval;
             lastTime = currentTime;
-            if (delta >= 1) {// 刷新
-                gameStatic = update();// 调用update 更细 画面
-                repaint();// 调用repaint 更新 画面 为什么 可以 召唤到 paint component 是不是 因为 基继承了
+            if (delta >= 1) { // renew
+                gameStatic = update();// update window
+                repaint();// update window.  why can called paint component? inheritent???
                 delta = 0;
                 if (gameStatic > -1)
                     break;
             }
-
-            // end panel need to show, gameStatic == 0 -> whitewin, 1 -> blackwin
-
         }
     }
 
-    private int update() {// handle updating stuff piece position number of the piece.
+    private int update() { // handle updating stuff piece position number of the piece.
 
+        // check King exist
+        pieceImfo.color = currentColor;
         boolean whiteKingE = false;
         boolean blackKingE = false;
-        pieceImfo.color = currentColor;
-
-        for (Piece piece1 : pieces) {
+        for (Piece piece1 : pieceImfo.Pieces) {
             if (piece1.color == "white" && piece1.type == Type.King)
                 whiteKingE = true;
             if (piece1.color == "black" && piece1.type == Type.King)
                 blackKingE = true;
         }
-        if (!whiteKingE) {
+        if (!whiteKingE || !blackKingE) {
             gameOver = true;
-            System.out.println("********Blue Win!********");
-            return 0;
+            return !whiteKingE?0:1;
         }
-        if (!blackKingE) {
-            gameOver = true;
-            System.out.println("********Pink Win!********");
-            return 1;
-        }
-        if (promotion) {
-            if (mouse.pressed) {
-                for (Piece piece : promoPieces) {
 
-                    if (piece.column == mouse.coordinate_x / ChessBoard.SQUARE_SIZE
-                            && piece.row == mouse.coordinate_y / ChessBoard.SQUARE_SIZE && !CanChangeWithQueen) {
-                        switch (piece.type) {
-                            case Rook:
-                                pieceImfo.simPiece.add(new Rook(currentColor, activePiece.column, activePiece.row));
-                                break;
-                            case Knight:
-                                pieceImfo.simPiece.add(new Knight(currentColor, activePiece.column, activePiece.row));
-                                break;
-                            case Queen:
-                                pieceImfo.simPiece.add(new Queen(currentColor, activePiece.column, activePiece.row));
-                                break;
-                            case Bishop:
-                                pieceImfo.simPiece.add(new Bishop(currentColor, activePiece.column, activePiece.row));
-                                break;
-                            default:
-                                break;
-                        }
-                        pieceImfo.simPiece.remove(activePiece);
-                        copyPieces(pieceImfo.simPiece, pieces);
-                        promotion = false;
-                        changePlayer();
+        if (promotion && mouse.pressed) {
+            for (Piece piece : promoPieces) {
+                if (piece.column == mouse.coordinate_x / ChessBoard.SQUARE_SIZE && piece.row == mouse.coordinate_y / ChessBoard.SQUARE_SIZE) {
+                    boolean CCQ = CanChangeWithQueen;
+                    switch (piece.type) {
+                        case Rook:
+                            pieceImfo.simPiece.add(new Rook(currentColor,CCQ?pieceImfo.oriCol:pieceImfo.actPiece.column,CCQ?pieceImfo.oriRow:pieceImfo.actPiece.row));break;
+                        case Knight:
+                            pieceImfo.simPiece.add(new Knight(currentColor,CCQ?pieceImfo.oriCol:pieceImfo.actPiece.column,CCQ?pieceImfo.oriRow:pieceImfo.actPiece.row));break;
+                        case Queen:
+                            pieceImfo.simPiece.add(new Queen(currentColor,CCQ?pieceImfo.oriCol:pieceImfo.actPiece.column,CCQ?pieceImfo.oriRow:pieceImfo.actPiece.row));break;
+                        case Bishop:
+                            pieceImfo.simPiece.add(new Bishop(currentColor,CCQ?pieceImfo.oriCol:pieceImfo.actPiece.column,CCQ?pieceImfo.oriRow:pieceImfo.actPiece.row));break;
+                        default: break;
                     }
-
-                    if (CanChangeWithQueen && piece.column == mouse.coordinate_x / ChessBoard.SQUARE_SIZE
-                            && piece.row == mouse.coordinate_y / ChessBoard.SQUARE_SIZE) {
-                        switch (piece.type) {
-                            case Rook:
-                                pieceImfo.simPiece.add(new Rook(currentColor, pieceImfo.oriCol, pieceImfo.oriRow));
-                                break;
-                            case Knight:
-                                pieceImfo.simPiece.add(new Knight(currentColor, pieceImfo.oriCol, pieceImfo.oriRow));
-                                break;
-                            case Queen:
-                                pieceImfo.simPiece.add(new Queen(currentColor, pieceImfo.oriCol, pieceImfo.oriRow));
-                                break;
-                            case Bishop:
-                                pieceImfo.simPiece.add(new Bishop(currentColor, pieceImfo.oriCol, pieceImfo.oriRow));
-                                break;
-                            default:
-                                break;
-                        }
-
-                        for (Piece piece1 : pieces) {
-                            if (piece1.type == Type.Pawn && ((piece1.color == "white" && piece1.row == 0)
-                                    || (piece1.color == "black" && piece1.row == 7))) {
-                                System.out.println("tester");
-                                    pieceImfo.simPiece.remove(piece1);
-                            }
-                        }
-                        copyPieces(pieceImfo.simPiece, pieces);
-                        promotion = false;
-                        changePlayer();
-                    }
+                    if(!CCQ)
+                        pieceImfo.simPiece.remove(pieceImfo.actPiece);
+                    else
+                        for (Piece piece1 : pieceImfo.Pieces)
+                            if (piece1.type == Type.Pawn && ((piece1.color == "white" && piece1.row == 0)||(piece1.color == "black" && piece1.row == 7)))
+                                pieceImfo.simPiece.remove(piece1);
+                    copyPieces(pieceImfo.simPiece, pieceImfo.Pieces);
+                    promotion = false;
+                    changePlayer();
                 }
             }
-
         }
 
         else {
             if (mouse.pressed) {// 按下按钮的判断
                 rightClick = mouse.rightButtonPressed;
                 leftClick = mouse.leftButtonPressed;
-                if (activePiece == null) {
+                if (pieceImfo.actPiece == null) {
                     for (Piece piece : pieceImfo.simPiece)// 择取行动方的棋子
-                        if (piece.color == currentColor && piece.column == mouse.coordinate_x / ChessBoard.SQUARE_SIZE
-                                && piece.row == mouse.coordinate_y / ChessBoard.SQUARE_SIZE) {
-                            activePiece = piece;
-                            pieceImfo.actPiece = activePiece;
+                        if (piece.color == currentColor && piece.column == mouse.coordinate_x / ChessBoard.SQUARE_SIZE && piece.row == mouse.coordinate_y / ChessBoard.SQUARE_SIZE) {
+                            pieceImfo.actPiece = piece;
                             pieceImfo.oriCol = piece.column;
                             pieceImfo.oriRow = piece.row;
-                            pieceImfo.actPreCol = activePiece.previous_Column;
-                            pieceImfo.actPreRow = activePiece.previous_Row;
-                            pieceImfo.color = activePiece.color;
+                            pieceImfo.color = pieceImfo.actPiece.color;
                         }
                 } else
                     simulate();// 更改成点亮的模式 todo+
             }
-            if (mouse.pressed == false && activePiece != null) {
-                if (validSquare) {// validSquare 可能有 邏輯重複的問題
-                    if (activePiece.type == Type.Pawn)// 合作邏輯
-                        if (Math.abs(activePiece.row - activePiece.previous_Row) == 2)
-                            activePiece.twoStep = true;
-                    if (activePiece.type == Type.RookPawn && rightClick &&RookPawn.RookPawnCanDifuse(pieceImfo)) {// click
-                        int UnfuseRow = activePiece.row;
-                        int UnfuseColumn = activePiece.column;
-                        if (activePiece.color.equals("white")) {
-                            pieceImfo.simPiece.remove(activePiece);
-                            pieceImfo.simPiece.add(new Rook(white, UnfuseColumn, UnfuseRow));
-                            Piece pawn = new Pawn(white, UnfuseColumn, UnfuseRow + 1);
-                            pawn.moved = true;
-                            pieceImfo.simPiece.add(pawn);
-                        }
-                        if (activePiece.color.equals("black")) {
-                            pieceImfo.simPiece.remove(activePiece);
-                            pieceImfo.simPiece.add(new Rook(black, UnfuseColumn, UnfuseRow));
-                            Piece pawn = new Pawn(black, UnfuseColumn, UnfuseRow - 1);
-                            pawn.moved = true;
-                            pieceImfo.simPiece.add(pawn);
-                        }
-
+            if (!mouse.pressed && pieceImfo.actPiece != null) {
+                if (validSquare) { 
+                    if (pieceImfo.actPiece.type == Type.Pawn && Math.abs(pieceImfo.actPiece.row - pieceImfo.actPiece.previous_Row) == 2)
+                        pieceImfo.actPiece.twoStep = true;
+                    if (pieceImfo.actPiece.type == Type.RookPawn && rightClick &&RookPawn.RookPawnCanDifuse(pieceImfo))// click
+                        pieceImfo.simPiece = RookPawn.RookPawnDifuse(pieceImfo);
+                    if (pieceImfo.actPiece != null) {
+                        pieceImfo.actPiece.coordinate_x = pieceImfo.actPiece.getCoordinate_x(pieceImfo.actPiece.column);// update position
+                        pieceImfo.actPiece.coordinate_y = pieceImfo.actPiece.getCoordinate_y(pieceImfo.actPiece.row);// update position
+                        pieceImfo.actPiece.previous_Column = pieceImfo.actPiece.getColumn(pieceImfo.actPiece.coordinate_x);
+                        pieceImfo.actPiece.previous_Row = pieceImfo.actPiece.getRow(pieceImfo.actPiece.coordinate_y);
+                        pieceImfo.actPiece.moved = true;// 合作邏輯
                     }
-                    copyPieces(pieceImfo.simPiece, pieces);// 更新棋子
-                    if (activePiece != null) {
-                        activePiece.coordinate_x = activePiece.getCoordinate_x(activePiece.column);// update position
-                        activePiece.coordinate_y = activePiece.getCoordinate_y(activePiece.row);// update position
-                        activePiece.previous_Column = activePiece.getColumn(activePiece.coordinate_x);
-                        activePiece.previous_Row = activePiece.getRow(activePiece.coordinate_y);
-                        pieceImfo.actPreCol = activePiece.previous_Column;
-                        pieceImfo.actPreRow = activePiece.previous_Row;
-                        activePiece.moved = true;// 合作邏輯
-                    }
-
-                    if (FusionPawnAndCar) {
+                    if (FusionPawnAndCar)
                         pieceImfo.simPiece = RookPawn.PawnFusionWithRook(pieceImfo);
-                        copyPieces(pieceImfo.simPiece, pieces);
-                    } else if (CanChangeWithQueen){
+                    else if (CanChangeWithQueen)
                         pieceImfo.simPiece = Queen.ChangeWithQueen(pieceImfo);
-                        copyPieces(pieceImfo.simPiece,pieces);
-                    }
-
-                    if (canPromote()) {
+                    copyPieces(pieceImfo.simPiece,pieceImfo.Pieces);
+                    if (Pawn.canPromote(pieceImfo)) {
+                        PromotePawnList();
                         promotion = true;
-                    } else {
+                    } else
                         changePlayer();
-                    }
-
                 } else {
-                    copyPieces(pieces, pieceImfo.simPiece);// 似乎是冗程式碼 可以考慮拿掉，不過先暫時保留。
-                    activePiece.coordinate_x = activePiece.getCoordinate_x(activePiece.previous_Column);
-                    activePiece.coordinate_y = activePiece.getCoordinate_y(activePiece.previous_Row);
-                    activePiece.column = activePiece.previous_Column;
-                    activePiece.row = activePiece.previous_Row;
-                    pieceImfo.actRow =  activePiece.row;
-                    pieceImfo.actCol = activePiece.column;
-                    activePiece = null;
+                    copyPieces(pieceImfo.Pieces, pieceImfo.simPiece);// 似乎是冗程式碼 可以考慮拿掉，不過先暫時保留。
+                    pieceImfo.actPiece.coordinate_x = pieceImfo.actPiece.getCoordinate_x(pieceImfo.actPiece.previous_Column);
+                    pieceImfo.actPiece.coordinate_y = pieceImfo.actPiece.getCoordinate_y(pieceImfo.actPiece.previous_Row);
+                    pieceImfo.actPiece.column = pieceImfo.actPiece.previous_Column;
+                    pieceImfo.actPiece.row = pieceImfo.actPiece.previous_Row;
+                    pieceImfo.actPiece = null;
                 }
-
             }
         }
         return -1;
@@ -299,65 +175,88 @@ public class GamePanel extends JPanel implements Runnable {
     private void simulate() {// 拖拉程式码 d
         canMove = false;
         validSquare = false;
-        copyPieces(pieces, pieceImfo.simPiece);// 重新更新
-        activePiece.coordinate_x = mouse.coordinate_x - 45;// to do
-        activePiece.coordinate_y = mouse.coordinate_y - 45;// to do
-        activePiece.column = activePiece.getColumn(activePiece.coordinate_x);// 計算落點的column 和 row
-        activePiece.row = activePiece.getRow(activePiece.coordinate_y);// 計算落點的column 和 row
-        pieceImfo.actRow = activePiece.row;
-        pieceImfo.actCol = activePiece.column;
-        if (activePiece.canMove(activePiece.column, activePiece.row)) {// 檢查落點是否可走。
+        copyPieces(pieceImfo.Pieces, pieceImfo.simPiece);// 重新更新
+        pieceImfo.actPiece.coordinate_x = mouse.coordinate_x - 45;// to do
+        pieceImfo.actPiece.coordinate_y = mouse.coordinate_y - 45;// to do
+        pieceImfo.actPiece.column = pieceImfo.actPiece.getColumn(pieceImfo.actPiece.coordinate_x);// check want move column
+        pieceImfo.actPiece.row = pieceImfo.actPiece.getRow(pieceImfo.actPiece.coordinate_y);// check want move row
+        if (pieceImfo.actPiece.canMove(pieceImfo.actPiece.column, pieceImfo.actPiece.row)) {// check canmove or not
             canMove = true;
             validSquare = true;
-
-            if ((activePiece.type == Type.Pawn && ((Pawn) activePiece).AEnpassantmove == false)
-                    || activePiece.type != Type.Pawn)
-                activePiece.hittingP = activePiece.getHittingPiece(activePiece.column, activePiece.row);// 更新
-
+            if ((pieceImfo.actPiece.type == Type.Pawn && ((Pawn) pieceImfo.actPiece).AEnpassantmove == false) || pieceImfo.actPiece.type != Type.Pawn)
+                pieceImfo.actPiece.hittingP = pieceImfo.actPiece.getHittingPiece(pieceImfo.actPiece.column, pieceImfo.actPiece.row);
             else
-                for (Piece piece : pieceImfo.simPiece) // Gamepel.???
-                    if (piece.column == activePiece.column && piece.row == activePiece.previous_Row
-                            && piece.color.equals(activePiece.color) == false && piece.twoStep == true)
-                        activePiece.hittingP = piece;
+                for (Piece piece : pieceImfo.simPiece)
+                    if (piece.column == pieceImfo.actPiece.column && piece.row == pieceImfo.actPiece.previous_Row && !piece.color.equals(pieceImfo.actPiece.color) && piece.twoStep)
+                        pieceImfo.actPiece.hittingP = piece;
 
             FusionPawnAndCar = RookPawn.PawnCanFusionWithRook(pieceImfo);
-            CanChangeWithQueen = (activePiece.type == Type.Queen);
+            CanChangeWithQueen = (pieceImfo.actPiece.type == Type.Queen);
 
-            if (activePiece.hittingP != null && activePiece.color.equals(activePiece.hittingP.color) == false)
+            if (pieceImfo.actPiece.hittingP != null && pieceImfo.actPiece.color.equals(pieceImfo.actPiece.hittingP.color) == false)
                 for (int i = 0; i < pieceImfo.simPiece.size(); i++)
-                    if (pieceImfo.simPiece.get(i).equals(activePiece.hittingP))
+                    if (pieceImfo.simPiece.get(i).equals(pieceImfo.actPiece.hittingP))
                         pieceImfo.simPiece.remove(i);
         }
     }
 
     private void changePlayer() {
         currentColor = (currentColor.equals("white"))?"black":"white"; 
-        for (Piece piece : pieces)
+        for (Piece piece : pieceImfo.Pieces)
         if (piece.color == currentColor)
             piece.twoStep = false;
-        activePiece = null;
         pieceImfo.actPiece = null;
         pieceImfo.color = currentColor;
     }
 
-    private boolean canPromote() {
-        for (Piece piece : pieces) {
-            if (piece.type == Type.Pawn
-                    && ((piece.color == "white" && piece.row == 0) || (piece.color == "black" && piece.row == 7))) {
-                promoPieces.clear();
-                promoPieces.add(new Rook(piece.color, 9, 2));
-                promoPieces.add(new Queen(piece.color, 9, 3));
-                promoPieces.add(new Bishop(piece.color, 9, 4));
-                promoPieces.add(new Knight(piece.color, 9, 5));
-                return true;
-            }
+    private void PromotePawnList() { // show promotion
+        if(!promoPieces.get(0).color.equals(pieceImfo.color)){
+            promoPieces.clear();
+            promoPieces.add(new Rook(pieceImfo.color, 9, 2));
+            promoPieces.add(new Queen(pieceImfo.color, 9, 3));
+            promoPieces.add(new Bishop(pieceImfo.color, 9, 4));
+            promoPieces.add(new Knight(pieceImfo.color, 9, 5));
         }
-        return false;
+    }
+
+    private void setPromotePiece(){
+        promoPieces.add(new Rook(white, 9, 2));
+        promoPieces.add(new Queen(white, 9, 3));
+        promoPieces.add(new Bishop(white, 9, 4));
+        promoPieces.add(new Knight(white, 9, 5));
+    }
+    
+    public void setPieces() {
+        pieceImfo.Pieces.add(new Pawn(white, 0, 6));
+        pieceImfo.Pieces.add(new Pawn(white, 1, 6));
+        pieceImfo.Pieces.add(new Pawn(white, 2, 6));
+        pieceImfo.Pieces.add(new Pawn(white, 3, 6));
+        pieceImfo.Pieces.add(new Pawn(white, 4, 6));
+        pieceImfo.Pieces.add(new Rook(white, 0, 7));
+        pieceImfo.Pieces.add(new Queen(white, 1, 7));
+        pieceImfo.Pieces.add(new Bishop(white, 2, 7));
+        pieceImfo.Pieces.add(new King(white, 3, 7));
+        pieceImfo.Pieces.add(new Knight(white, 4, 7));
+        pieceImfo.Pieces.add(new Pawn(black, 0, 1));
+        pieceImfo.Pieces.add(new Pawn(black, 1, 1));
+        pieceImfo.Pieces.add(new Pawn(black, 2, 1));
+        pieceImfo.Pieces.add(new Pawn(black, 3, 1));
+        pieceImfo.Pieces.add(new Pawn(black, 4, 1));
+        pieceImfo.Pieces.add(new Rook(black, 4, 0));
+        pieceImfo.Pieces.add(new Queen(black, 3, 0));
+        pieceImfo.Pieces.add(new Bishop(black, 2, 0));
+        pieceImfo.Pieces.add(new King(black, 1, 0));
+        pieceImfo.Pieces.add(new Knight(black, 0, 0));
+    }
+
+    private void copyPieces(ArrayList<Piece> Beginning, ArrayList<Piece> Destination) {
+        Destination.clear();
+        for (int i = 0; i < Beginning.size(); i++)
+            Destination.add(Beginning.get(i));
     }
 
     public void paintComponent(Graphics g) {// handle drawing component g automatik transfer form swing //
-                                            // 算是一种overide？？？
-        super.paintComponent(g);// 没有搞懂在干嘛
+        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         chessboard.drawTheBoard(g2);
 
@@ -366,15 +265,15 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawImage(piece.image, piece.coordinate_x, piece.coordinate_y, ChessBoard.SQUARE_SIZE,
                     ChessBoard.SQUARE_SIZE, null);
 
-        if (activePiece != null) {// 可以删除 不影响运作
+        if (pieceImfo.actPiece != null) {
             if (canMove) {
-                g2.setColor(Color.white);// 设置绘画工具的基础颜色
+                g2.setColor(Color.white);
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));// 设置绘画工具的透明度
-                g2.fillRect(activePiece.column * ChessBoard.SQUARE_SIZE, activePiece.row * ChessBoard.SQUARE_SIZE,
+                g2.fillRect(pieceImfo.actPiece.column * ChessBoard.SQUARE_SIZE, pieceImfo.actPiece.row * ChessBoard.SQUARE_SIZE,
                         ChessBoard.SQUARE_SIZE, ChessBoard.SQUARE_SIZE);
             }
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));// 设置绘画工具的透明度
-            g2.drawImage(activePiece.image, activePiece.coordinate_x, activePiece.coordinate_y, ChessBoard.SQUARE_SIZE,
+            g2.drawImage(pieceImfo.actPiece.image, pieceImfo.actPiece.coordinate_x, pieceImfo.actPiece.coordinate_y, ChessBoard.SQUARE_SIZE,
                     ChessBoard.SQUARE_SIZE, null);
 
         }
@@ -413,6 +312,5 @@ public class GamePanel extends JPanel implements Runnable {
                 g2.drawString(Winner, 600, 500);
             }
         }
-
     }
 }
