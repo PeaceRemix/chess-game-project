@@ -8,9 +8,9 @@ public class Knight extends Piece {
         super(color, column, row);
         type = Type.Knight;
         if (color == "white") {
-            image = getImage("/PieceImage/w-knight");// 怎么读取啊 路径是不是怪怪的
+            image = getImage("/PieceImage/w-knight");
         } else {
-            image = getImage("/PieceImage/b-knight");// 怎么读取啊 路径是不是怪怪的
+            image = getImage("/PieceImage/b-knight");
         }
     }
 

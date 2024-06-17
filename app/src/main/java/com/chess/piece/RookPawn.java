@@ -28,7 +28,7 @@ public class RookPawn extends Piece {
         return false;
     }
 
-    public static ArrayList<Piece> PawnFusionWithRook(PieceImfo pi) {
+    public static ArrayList<Piece> PawnFusionWithRook(PieceInfo pi) {
         int FusionColumn = pi.actPiece.column;
         int FusionRow = pi.actPiece.row;
         ArrayList<Piece> removePiece = new ArrayList<>();
@@ -40,14 +40,14 @@ public class RookPawn extends Piece {
         return pi.simPiece;
     }
 
-    public static boolean PawnCanFusionWithRook(PieceImfo pi) {// 可以往後走 所以 可以融合 條件限制寫在了pawn
+    public static boolean PawnCanFusionWithRook(PieceInfo pi) {// 可以往後走 所以 可以融合 條件限制寫在了pawn
         if (pi.actPiece.type == Type.Pawn)
             if ((pi.color == "white" && (pi.actPiece.row > pi.actPiece.previous_Row)) || ((pi.color == "black") && (pi.actPiece.row < pi.actPiece.previous_Row)))
                 return true;
         return false;
     }
 
-    public static boolean RookPawnCanDifuse(PieceImfo pi) {
+    public static boolean RookPawnCanDifuse(PieceInfo pi) {
         System.out.println(pi.actPiece.row + "," + pi.actPiece.previous_Row);
         if (pi.actPiece.row == pi.actPiece.previous_Row && pi.actPiece.column == pi.actPiece.previous_Column) {
             if (pi.color.equals("white"))
@@ -60,7 +60,7 @@ public class RookPawn extends Piece {
         return false;
     }
 
-    public static ArrayList<Piece> RookPawnDifuse(PieceImfo pi){
+    public static ArrayList<Piece> RookPawnDifuse(PieceInfo pi){
         boolean WorB = pi.actPiece.color.equals("white");
         pi.simPiece.remove(pi.actPiece);
         pi.simPiece.add(new Rook(pi.actPiece.color, pi.actPiece.column,  pi.actPiece.row));

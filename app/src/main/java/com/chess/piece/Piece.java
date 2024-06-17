@@ -58,21 +58,13 @@ public class Piece {// super class for all pieces
         return row * ChessBoard.SQUARE_SIZE;
     }
 
-    public int getColumn(int coordinate_x) {// 居中处理 待处理逻辑
+    public int getColumn(int coordinate_x) {// 居中处理
         return (coordinate_x + ChessBoard.HALF_SQUARE_SIZE) / ChessBoard.SQUARE_SIZE;
     }
 
-    public int getRow(int coordinate_y) {// 居中处理 待处理逻辑
+    public int getRow(int coordinate_y) {// 居中处理 
         return (coordinate_y + ChessBoard.HALF_SQUARE_SIZE) / ChessBoard.SQUARE_SIZE;
     }
-
-    /*
-     * public void draw(Graphics2D g2){ //合作展现
-     * g2.drawImage(image,coordinate_x,
-     * coordinate_y,ChessBoard.SQUARE_SIZE,ChessBoard.SQUARE_SIZE,null);//图片来源 坐标
-     * 大小缩放 观察者 通常是null；
-     * }
-     */
 
     public boolean canMove(int targetColumn, int targetRow) {// need to overide
         return true;
@@ -114,7 +106,7 @@ public class Piece {// super class for all pieces
 
     public Piece getHittingPiece(int targetColumn, int targetRow) {
 
-        for (Piece piece : GamePanel.pieceImfo.simPiece) {
+        for (Piece piece : GamePanel.pieceInfo.simPiece) {
             if (targetColumn == piece.previous_Column && targetRow == piece.previous_Row && piece != this) {// logic 研究
                 return piece;
             }

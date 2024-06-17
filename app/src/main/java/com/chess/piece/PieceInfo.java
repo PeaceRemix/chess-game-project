@@ -1,7 +1,7 @@
 package com.chess.piece;
 import java.util.ArrayList;
 
-public class PieceImfo {
+public class PieceInfo {
     public String color;
     public int oriRow;
     public int oriCol;

@@ -12,9 +12,9 @@ public class Pawn extends Piece {
         type = Type.Pawn;
 
         if (color == "white") {
-            image = getImage("/PieceImage/w-pawn");// 怎么读取啊 路径是不是怪怪的
+            image = getImage("/PieceImage/w-pawn");
         } else {
-            image = getImage("/PieceImage/b-pawn");// 怎么读取啊 路径是不是怪怪的
+            image = getImage("/PieceImage/b-pawn");
         }
     }
 
@@ -49,7 +49,7 @@ public class Pawn extends Piece {
 
         // En passant
         if (Math.abs(targetColumn - previous_Column) == 1 && targetRow == previous_Row + moveValueBlackOrWhite) {
-            for (Piece piece : GamePanel.pieceImfo.simPiece) {
+            for (Piece piece : GamePanel.pieceInfo.simPiece) {
                 if (piece.column == targetColumn && piece.row == this.previous_Row
                         && piece.color.equals(this.color) == false && piece.twoStep == true) {
                     this.hittingP = piece;
@@ -60,7 +60,7 @@ public class Pawn extends Piece {
         }
 
         if ((targetColumn == previous_Column) && (targetRow == previous_Row - moveValueBlackOrWhite)) {
-            for (Piece piece : GamePanel.pieceImfo.simPiece) {
+            for (Piece piece : GamePanel.pieceInfo.simPiece) {
                 if (piece.column == targetColumn && piece.row == targetRow && piece.color.equals(this.color) == true
                         && piece.type == Type.Rook) {
                     return true;
@@ -73,7 +73,7 @@ public class Pawn extends Piece {
 
     }
 
-    public static boolean canPromote(PieceImfo pi) {
+    public static boolean canPromote(PieceInfo pi) {
         for (Piece piece : pi.Pieces)
             if (piece.type == Type.Pawn && piece.row == ((piece.color=="white")?0:7))
                 return true;

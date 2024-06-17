@@ -9,9 +9,9 @@ public class Bishop extends Piece {
         super(color, column, row);
         type = Type.Bishop;
         if (color == "white") {
-            image = getImage("/PieceImage/w-bishop");// 怎么读取啊 路径是不是怪怪的
+            image = getImage("/PieceImage/w-bishop");
         } else {
-            image = getImage("/PieceImage/b-bishop");// 怎么读取啊 路径是不是怪怪的
+            image = getImage("/PieceImage/b-bishop");
         }
 
     }
@@ -50,7 +50,7 @@ public class Bishop extends Piece {
         int Nearest_Ally_Obstacle_Position_Row = get_Nearest_Ally_Obstacle_Position_On_The_Diagonal_Grid_Path(
                 targetColumn, targetRow, "Row");
         Piece piece = null;
-        for (Piece TransitPiece : GamePanel.pieceImfo.simPiece) {
+        for (Piece TransitPiece : GamePanel.pieceInfo.simPiece) {
             if (Nearest_Ally_Obstacle_Position_Column == TransitPiece.previous_Column
                     && Nearest_Ally_Obstacle_Position_Row == TransitPiece.previous_Row && TransitPiece != this) {
                 piece = TransitPiece;

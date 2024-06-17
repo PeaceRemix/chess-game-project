@@ -26,7 +26,7 @@ public class Queen extends Piece{
         return false;
     }
    
-    public static ArrayList<Piece> ChangeWithQueen(PieceImfo pi){
+    public static ArrayList<Piece> ChangeWithQueen(PieceInfo pi){
         ArrayList<Piece> ChangePiece= new ArrayList<>();
         for(Piece piece : pi.simPiece)
             if(pi.actPiece.column == piece.column && pi.actPiece.row == piece.row && (piece.type != Type.Queen))
